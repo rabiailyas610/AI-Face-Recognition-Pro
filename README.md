@@ -2,7 +2,7 @@
 
 A Python-based face recognition system that detects faces, generates embeddings, and performs similarity matching using a cloud-based vector database.
 
-##Project Upgrades (Old vs New)
+## Project Upgrades (Old vs New)
 
 This project improves the traditional face recognition approach by introducing a cloud-based vector search system.
 
@@ -12,14 +12,14 @@ This project improves the traditional face recognition approach by introducing a
 * **Matching:** Euclidean pixel comparison → L2 vector distance (`<->`)
 * **Reliability:** Improved dependency management for Colab execution
 
-##Key Features
+## Key Features
 
 * Cloud-based vector storage using Neon PostgreSQL
 * Face embeddings using CLIP Vision Transformer
 * Fast similarity search using pgvector
 * Scalable and modular pipeline
 
-##System Workflow
+## System Workflow
 
 1. Input image is provided to the system
 2. Face is detected and cropped using OpenCV
@@ -28,7 +28,7 @@ This project improves the traditional face recognition approach by introducing a
 5. New image embedding is compared using L2 distance (`<->`)
 6. Closest match is returned from database
 
-##Technology Stack
+## Technology Stack
 
 * Python 3.x
 * OpenCV
