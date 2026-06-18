@@ -1,41 +1,44 @@
 # Face Recognition System using CLIP & Neon DB
 
-A stable face recognition project built with Python to detect faces, extract feature vectors, and match identities using a cloud-based serverless vector database.
+A Python-based face recognition system that detects faces, generates embeddings, and performs similarity matching using a cloud-based vector database.
 
-## 🔄 Project Upgrades: Old vs. New
+##Project Upgrades (Old vs New)
 
-This project was updated to replace legacy local file storage with a modern serverless vector cloud setup:
+This project improves the traditional face recognition approach by introducing a cloud-based vector search system.
 
-- **Database:** Shifted from storing cropped image files locally to a serverless Neon PostgreSQL database.
-- **Search System:** Replaced slow manual image file looping with fast pgvector similarity search.
-- **Mathematical Matching:** Upgraded from basic pixel comparisons to L2 vector space calculations (`<->`).
-- **Feature Extraction:** Replaced older pixel-based methods with OpenAI's CLIP Vision Transformer model via Hugging Face.
-- **Stability:** Fixed third-party package conflicts to create a reliable and working environment in Google Colab.
+* **Database:** Local image storage → Neon PostgreSQL (serverless)
+* **Search Method:** Loop-based comparison → pgvector similarity search
+* **Feature Extraction:** Pixel-based methods → CLIP embeddings
+* **Matching:** Euclidean pixel comparison → L2 vector distance (`<->`)
+* **Reliability:** Improved dependency management for Colab execution
 
-## 📌 Key Features
+##Key Features
 
-- **Cloud Vector Storage:** Uses Neon PostgreSQL with the pgvector extension for data indexing.
-- **Transformer Embeddings:** Generates accurate 512-dimensional face vectors using OpenAI's pre-trained CLIP model (`clip-vit-base-patch32`).
-- **Nearest Neighbor Search:** Leverages the Euclidean L2 distance operator (`<->`) to quickly retrieve the closest matching identity profile from the database.
-- **Clean Execution Code:** Fully contained in a structured Python script for easy replication.
+* Cloud-based vector storage using Neon PostgreSQL
+* Face embeddings using CLIP Vision Transformer
+* Fast similarity search using pgvector
+* Scalable and modular pipeline
 
-## 🛠️ System Workflow
+##System Workflow
 
-1. **Face Detection:** The system takes an input image and isolates the face boundaries using an OpenCV Cascade Classifier.
-2. **Feature Extraction:** The cropped face image is processed through the Hugging Face `CLIPProcessor`.
-3. **Vector Generation:** The `CLIPVisionModel` converts the face image into a 512-point numeric array.
-4. **Database Matching:** The system queries the Neon database using an L2 distance vector search to instantly fetch the name and filename of the closest match.
+1. Input image is provided to the system
+2. Face is detected and cropped using OpenCV
+3. Cropped image is passed to CLIP model for embedding generation
+4. Embedding is stored in PostgreSQL database
+5. New image embedding is compared using L2 distance (`<->`)
+6. Closest match is returned from database
 
-## 🎛️ Technology Stack
+##Technology Stack
 
-- **Language:** Python 3.x
-- **Deep Learning Framework:** PyTorch
-- **Computer Vision:** OpenCV (Open Source Computer Vision Library)
-- **Feature Extractor Model:** OpenAI CLIP (Vision Transformer)
-- **Cloud Database:** Neon PostgreSQL Serverless Instance
-- **Database Extension:** pgvector plugin (`vector(512)`)
+* Python 3.x
+* OpenCV
+* PyTorch
+* OpenAI CLIP (Hugging Face)
+* Neon PostgreSQL
+* pgvector extension
 
-## 📊 Database Schema
+
+## Database Schema
 
 ```sql
 CREATE TABLE face_profiles (
@@ -46,12 +49,18 @@ CREATE TABLE face_profiles (
 );
 ```
 
-## 🚀 Setup and Usage
+## Setup Instructions
 
-1. **Install Dependencies:**
-   ```bash
-   pip install opencv-python transformers psycopg2-binary pillow numpy torch
-   ```
-2. **Initialize Database:** Configure your Neon DB URL and execute the table schema creation method.
-3. **Register Face Profiles:** Pass your reference images through the registration function to save names and vector arrays into the cloud database.
-4. **Run Face Matching:** Pass unknown test images into the recognition engine to query the serverless database and display the closest identity match.
+1. Install dependencies:
+
+```bash
+pip install opencv-python transformers psycopg2-binary pillow numpy torch
+```
+
+2. Configure Neon DB connection strings inside the script.
+
+3. Create the database table using the schema provided above.
+
+4. Run the script to add reference images and generate embeddings.
+
+5. Execute the recognition function on test images to query the vector database.
