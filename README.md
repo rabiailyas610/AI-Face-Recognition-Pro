@@ -1,66 +1,48 @@
-# Face Recognition System using CLIP & Neon DB
+# Face Recognition System – OpenCV SFace
 
-A Python-based face recognition system that detects faces, generates embeddings, and performs similarity matching using a cloud-based vector database.
+[![Python](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/)
+[![OpenCV](https://img.shields.io/badge/OpenCV-4.8-green.svg)](https://opencv.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.28-red.svg)](https://streamlit.io/)
+[![Accuracy](https://img.shields.io/badge/Accuracy-99%25-brightgreen.svg)](https://openaccess.thecvf.com/content_CVPRW_2020/papers/w48/Zhong_SFace_Sigmoid-Constrained_Hypersphere_Loss_for_Robust_Face_Recognition_CVPRW_2020_paper.pdf)
 
-## Project Upgrades (Old vs New)
+A robust, offline‑capable face recognition system built with **OpenCV's SFace** deep learning model and a **Streamlit** web interface. It supports automatic enrolment from a folder hierarchy, manual registration, and real‑time identification with cosine similarity matching.
 
-This project improves the traditional face recognition approach by introducing a cloud-based vector search system.
+---
 
-* **Database:** Local image storage → Neon PostgreSQL (serverless)
-* **Search Method:** Loop-based comparison → pgvector similarity search
-* **Feature Extraction:** Pixel-based methods → CLIP embeddings
-* **Matching:** Euclidean pixel comparison → L2 vector distance (`<->`)
-* **Reliability:** Improved dependency management for Colab execution
+## Features
 
-## Key Features
+- **Pretrained SFace Model** – State‑of‑the‑art face recognition (99%+ accuracy on LFW) without any external training.
+- **Automatic Enrolment** – Place person‑specific subfolders inside `train/` and the app computes average face embeddings on first launch.
+- **Manual Registration** – Add new identities directly through the UI.
+- **Registered Persons List** – View all enrolled individuals in a dedicated tab.
+- **Cosine Similarity Matching** – Efficient and explainable nearest‑neighbour search using 128‑dimensional feature vectors.
+- **Persistent Storage** – Face embeddings are stored in a lightweight JSON database (`face_db.json`) for instant recall across sessions.
+- **Offline Operation** – The model file (35 MB) is downloaded once and then runs completely offline.
+- **Adjustable Threshold** – Fine‑tune the matching strictness via the confidence slider (implemented internally with a cosine threshold of 0.4).
 
-* Cloud-based vector storage using Neon PostgreSQL
-* Face embeddings using CLIP Vision Transformer
-* Fast similarity search using pgvector
-* Scalable and modular pipeline
+---
 
-## System Workflow
+## Tech Stack
 
-1. Input image is provided to the system
-2. Face is detected and cropped using OpenCV
-3. Cropped image is passed to CLIP model for embedding generation
-4. Embedding is stored in PostgreSQL database
-5. New image embedding is compared using L2 distance (`<->`)
-6. Closest match is returned from database
+| Component          | Technology                          |
+|--------------------|-------------------------------------|
+| Face Detection     | OpenCV Haar Cascade                 |
+| Face Recognition   | OpenCV SFace (ONNX)                 |
+| Frontend           | Streamlit                           |
+| Database           | JSON (file‑based)                   |
+| Language           | Python 3.9+                         |
+| Key Libraries      | `opencv-contrib-python`, `numpy`, `urllib` |
 
-## Technology Stack
+---
 
-* Python 3.x
-* OpenCV
-* PyTorch
-* OpenAI CLIP (Hugging Face)
-* Neon PostgreSQL
-* pgvector extension
+## Quick Start
 
+### Prerequisites
+- Python 3.9 or later
+- `pip` package manager
 
-## Database Schema
-
-```sql
-CREATE TABLE face_profiles (
-    id SERIAL PRIMARY KEY,
-    person_name TEXT NOT NULL,
-    filename TEXT NOT NULL,
-    embedding vector(512) NOT NULL
-);
-```
-
-## Setup Instructions
-
-1. Install dependencies:
-
-```bash
-pip install opencv-python transformers psycopg2-binary pillow numpy torch
-```
-
-2. Configure Neon DB connection strings inside the script.
-
-3. Create the database table using the schema provided above.
-
-4. Run the script to add reference images and generate embeddings.
-
-5. Execute the recognition function on test images to query the vector database.
+### Installation
+1. Clone the repository or copy the project folder.
+2. Install dependencies:
+   ```bash
+   pip install opencv-contrib-python streamlit numpy
