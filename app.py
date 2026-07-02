@@ -51,28 +51,21 @@ if not st.session_state.history:
     st.session_state.total_recognitions = len(st.session_state.history)
 
 # ============================================
-# CSS (Default Streamlit Layout - No hack)
+# CSS (Default Streamlit Layout)
 # ============================================
 st.markdown("""
 <style>
-    /* HIDE DEPLOY BUTTON & FOOTER */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    
-    /* APP BACKGROUND */
     .stApp { background: #0b0f1a; }
-    
-    /* Remove default page title */
     header h1 { display: none !important; }
     
-    /* SIDEBAR STYLING (ONLY VISUAL, NO LAYOUT HACK) */
     section[data-testid="stSidebar"] {
         background: rgba(11,15,26,0.98) !important;
         border-right: 1px solid rgba(255,255,255,0.04);
         padding: 16px 12px !important;
     }
     
-    /* SIDEBAR STATS */
     .sidebar-stat {
         background: rgba(255,255,255,0.02);
         border: 1px solid rgba(255,255,255,0.04);
@@ -84,7 +77,6 @@ st.markdown("""
     .sidebar-stat .label { color: #64748b; font-size: 9px; text-transform: uppercase; }
     .sidebar-stat .value { color: #f1f5f9; font-size: 14px; font-weight: 600; }
     
-    /* HISTORY ITEMS */
     .history-item {
         background: rgba(255,255,255,0.02);
         border-left: 3px solid #4f46e5;
@@ -96,7 +88,6 @@ st.markdown("""
     .history-time { color: #64748b; font-size: 9px; }
     .history-name { color: #f1f5f9; font-weight: 600; }
     
-    /* DASHBOARD CARDS */
     .dash-card {
         background: rgba(255,255,255,0.02);
         border: 1px solid rgba(255,255,255,0.05);
@@ -116,7 +107,6 @@ st.markdown("""
     .dash-card .value.blue { color: #818cf8; }
     .dash-card .value.purple { color: #a78bfa; }
     
-    /* SUCCESS BOX */
     .success-box {
         background: rgba(16,185,129,0.05);
         border: 1px solid rgba(16,185,129,0.1);
@@ -132,7 +122,6 @@ st.markdown("""
         border-radius: 8px;
     }
     
-    /* DATABASE ITEMS */
     .db-item {
         display: flex;
         align-items: center;
@@ -146,7 +135,6 @@ st.markdown("""
     .db-item .index { color: #475569; font-size: 10px; font-weight: 600; min-width: 24px; }
     .db-item .name { color: #e2e8f0; font-size: 12px; font-weight: 500; }
     
-    /* TABS STYLING */
     .stTabs [data-baseweb="tab-list"] {
         background: transparent !important;
         padding: 4px 0 !important;
@@ -167,7 +155,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ============================================
-# TITLE (Simple, no sticky hack)
+# TITLE
 # ============================================
 st.markdown("""
 <div style="
@@ -187,7 +175,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ============================================
-# SSL + MODEL
+# SSL + MODEL + CASCADE
 # ============================================
 try:
     ssl._create_default_https_context = ssl._create_unverified_context
@@ -197,6 +185,10 @@ except AttributeError:
 MODEL_URL = "https://github.com/opencv/opencv_zoo/raw/main/models/face_recognition_sface/face_recognition_sface_2021dec.onnx"
 MODEL_PATH = "face_recognition_sface_2021dec.onnx"
 
+CASCADE_URL = "https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml"
+CASCADE_PATH = "haarcascade_frontalface_default.xml"
+
+# Download model
 if not os.path.exists(MODEL_PATH):
     with st.spinner("📥 Downloading model (35MB)... Please wait."):
         try:
@@ -206,10 +198,20 @@ if not os.path.exists(MODEL_PATH):
             st.error(f"❌ Model download failed: {e}")
             st.stop()
 
+# Download cascade
+if not os.path.exists(CASCADE_PATH):
+    with st.spinner("📥 Downloading Haar Cascade..."):
+        try:
+            urllib.request.urlretrieve(CASCADE_URL, CASCADE_PATH)
+            st.success("✅ Cascade downloaded!")
+        except Exception as e:
+            st.error(f"❌ Cascade download failed: {e}")
+            st.stop()
+
 @st.cache_resource
 def load_recognizer():
     recognizer = cv2.FaceRecognizerSF.create(MODEL_PATH, "")
-    cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    cascade = cv2.CascadeClassifier(CASCADE_PATH)
     return recognizer, cascade
 
 recognizer, face_cascade = load_recognizer()
@@ -305,7 +307,7 @@ except Exception:
     pass
 
 # ============================================
-# SIDEBAR (Default Streamlit behavior)
+# SIDEBAR
 # ============================================
 with st.sidebar:
     st.markdown("### 🔐 Face Pro")
