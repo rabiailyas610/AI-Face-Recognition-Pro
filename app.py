@@ -175,7 +175,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ============================================
-# SSL + MODEL + CASCADE
+# SSL + MODEL + CASCADE (Robust)
 # ============================================
 try:
     ssl._create_default_https_context = ssl._create_unverified_context
@@ -188,30 +188,51 @@ MODEL_PATH = "face_recognition_sface_2021dec.onnx"
 CASCADE_URL = "https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml"
 CASCADE_PATH = "haarcascade_frontalface_default.xml"
 
+def download_file(url, path, description):
+    if os.path.exists(path) and os.path.getsize(path) > 0:
+        return True
+    try:
+        with st.spinner(f"📥 Downloading {description}..."):
+            urllib.request.urlretrieve(url, path)
+            if os.path.getsize(path) > 0:
+                st.success(f"✅ {description} downloaded!")
+                return True
+            else:
+                st.error(f"❌ {description} download failed (empty file)")
+                return False
+    except Exception as e:
+        st.error(f"❌ {description} download error: {e}")
+        return False
+
 # Download model
-if not os.path.exists(MODEL_PATH):
-    with st.spinner("📥 Downloading model (35MB)... Please wait."):
-        try:
-            urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
-            st.success("✅ Model downloaded!")
-        except Exception as e:
-            st.error(f"❌ Model download failed: {e}")
-            st.stop()
+if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) == 0:
+    if not download_file(MODEL_URL, MODEL_PATH, "Model (35MB)"):
+        st.stop()
 
 # Download cascade
-if not os.path.exists(CASCADE_PATH):
-    with st.spinner("📥 Downloading Haar Cascade..."):
+if not os.path.exists(CASCADE_PATH) or os.path.getsize(CASCADE_PATH) == 0:
+    if not download_file(CASCADE_URL, CASCADE_PATH, "Haar Cascade"):
+        # Fallback: try using OpenCV's built-in cascade if available
         try:
-            urllib.request.urlretrieve(CASCADE_URL, CASCADE_PATH)
-            st.success("✅ Cascade downloaded!")
-        except Exception as e:
-            st.error(f"❌ Cascade download failed: {e}")
+            import cv2.data
+            cascade_path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+            if os.path.exists(cascade_path):
+                st.info("ℹ️ Using built-in Haar Cascade.")
+                CASCADE_PATH = cascade_path
+            else:
+                st.error("❌ Cannot find Haar Cascade. Please check network and try again.")
+                st.stop()
+        except:
+            st.error("❌ Cannot find Haar Cascade. Please check network and try again.")
             st.stop()
 
 @st.cache_resource
 def load_recognizer():
     recognizer = cv2.FaceRecognizerSF.create(MODEL_PATH, "")
     cascade = cv2.CascadeClassifier(CASCADE_PATH)
+    if cascade.empty():
+        st.error("❌ Failed to load Haar Cascade. File may be corrupted.")
+        st.stop()
     return recognizer, cascade
 
 recognizer, face_cascade = load_recognizer()
