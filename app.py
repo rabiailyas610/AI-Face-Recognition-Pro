@@ -51,7 +51,7 @@ if not st.session_state.history:
     st.session_state.total_recognitions = len(st.session_state.history)
 
 # ============================================
-# CSS (Default Streamlit Layout)
+# CSS
 # ============================================
 st.markdown("""
 <style>
@@ -199,7 +199,7 @@ if not os.path.exists(MODEL_PATH):
 def load_recognizer():
     recognizer = cv2.FaceRecognizerSF.create(MODEL_PATH, "")
     
-    # Use built-in cascade path
+    # 🔥 FIX: Use OpenCV's built-in cascade path (no file management needed!)
     cascade_path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
     cascade = cv2.CascadeClassifier(cascade_path)
     
