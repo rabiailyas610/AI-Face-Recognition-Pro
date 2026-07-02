@@ -175,7 +175,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ============================================
-# SSL + MODEL (Cascade is now local)
+# SSL + MODEL (Cascade built-in)
 # ============================================
 try:
     ssl._create_default_https_context = ssl._create_unverified_context
@@ -184,7 +184,6 @@ except AttributeError:
 
 MODEL_URL = "https://github.com/opencv/opencv_zoo/raw/main/models/face_recognition_sface/face_recognition_sface_2021dec.onnx"
 MODEL_PATH = "face_recognition_sface_2021dec.onnx"
-CASCADE_PATH = "haarcascade_frontalface_default.xml"
 
 # Download model if missing
 if not os.path.exists(MODEL_PATH):
@@ -196,22 +195,16 @@ if not os.path.exists(MODEL_PATH):
             st.error(f"❌ Model download failed: {e}")
             st.stop()
 
-# Check cascade file exists
-if not os.path.exists(CASCADE_PATH):
-    st.error(f"❌ {CASCADE_PATH} not found! Please download it from https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml and place it in the app directory.")
-    st.stop()
-
-# Check cascade file size (should be > 0)
-if os.path.getsize(CASCADE_PATH) == 0:
-    st.error(f"❌ {CASCADE_PATH} is empty! Please re-download it.")
-    st.stop()
-
 @st.cache_resource
 def load_recognizer():
     recognizer = cv2.FaceRecognizerSF.create(MODEL_PATH, "")
-    cascade = cv2.CascadeClassifier(CASCADE_PATH)
+    
+    # 🔥 FIX: Use OpenCV's built-in cascade path (no file management needed!)
+    cascade_path = os.path.join(cv2.data.haarcascades, "haarcascade_frontalface_default.xml")
+    cascade = cv2.CascadeClassifier(cascade_path)
+    
     if cascade.empty():
-        st.error("❌ Failed to load Haar Cascade. The file may be corrupted. Please re-download it.")
+        st.error("❌ Failed to load Haar Cascade. Please check OpenCV installation.")
         st.stop()
     return recognizer, cascade
 
