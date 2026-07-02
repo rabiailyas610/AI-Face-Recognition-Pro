@@ -199,8 +199,8 @@ if not os.path.exists(MODEL_PATH):
 def load_recognizer():
     recognizer = cv2.FaceRecognizerSF.create(MODEL_PATH, "")
     
-    # 🔥 FIX: Use OpenCV's built-in cascade path (no file management needed!)
-    cascade_path = os.path.join(cv2.data.haarcascades, "haarcascade_frontalface_default.xml")
+    # Use built-in cascade path
+    cascade_path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
     cascade = cv2.CascadeClassifier(cascade_path)
     
     if cascade.empty():
