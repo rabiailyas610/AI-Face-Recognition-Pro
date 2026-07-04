@@ -4,6 +4,7 @@
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.8-green.svg)](https://opencv.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.28-red.svg)](https://streamlit.io/)
 [![Accuracy](https://img.shields.io/badge/Accuracy-99%25-brightgreen.svg)](https://openaccess.thecvf.com/content_CVPRW_2020/papers/w48/Zhong_SFace_Sigmoid-Constrained_Hypersphere_Loss_for_Robust_Face_Recognition_CVPRW_2020_paper.pdf)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 A robust, offline‑capable face recognition system built with **OpenCV's SFace** deep learning model and a **Streamlit** web interface. It supports automatic enrolment from a folder hierarchy, manual registration, and real‑time identification with cosine similarity matching.
 
